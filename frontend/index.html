@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaneGuard Vision - Enforcement Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [stats, setStats] = useState({
+                detector: { total_hvs: 0, active_violations: 0, total_violations: 0 },
+                weather: { temp: "--", condition: "Loading...", location: "--" }
+            });
+            const [alerts, setAlerts] = useState([]);
+
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    fetch('http://localhost:8000/stats')
+                        .then(res => res.json())
+                        .then(data => {
+                            setStats(data);
+                            if (data.detector.active_violations > 0) {
+                                // Simulate adding alert to log if new violation
+                                // In real app, listen to MQTT here
+                            }
+                        })
+                        .catch(err => console.error(err));
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className="min-h-screen p-6 grid grid-cols-12 gap-6 bg-slate-900 text-white">
+                    {/* Header */}
+                    <div className="col-span-12 glass-panel rounded-xl p-6 flex justify-between items-center bg-slate-800/50 border-cyan-500/30 border-b-2">
+                        <div>
+                            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+                                LANEGUARD VISION
+                            </h1>
+                            <p className="text-slate-400 text-sm">AI-Powered Highway Enforcement System</p>
+                        </div>
+                        <div className="flex items-center gap-4 text-right">
+                            <div>
+                                <p className="text-2xl font-bold">{stats.weather.temp}°C</p>
+                                <p className="text-xs text-slate-400">{stats.weather.condition}</p>
+                            </div>
+                            <div className="h-10 w-10 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                                <i data-lucide="cloud" className="text-cyan-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Feed */}
+                    <div className="col-span-8 glass-panel rounded-xl overflow-hidden relative group border-2 border-slate-700/50">
+                        <div className="absolute top-4 left-4 z-10 bg-red-600/90 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                            LIVE FEED
+                        </div>
+                        <img 
+                            src="http://localhost:8000/video_feed" 
+                            className="w-full h-full object-cover"
+                            alt="Live Video Stream" 
+                        />
+                        {/* Overlay Data */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                            <div className="flex gap-6">
+                                <div>
+                                    <p className="text-xs text-slate-400">CAMERA ID</p>
+                                    <p className="font-mono text-cyan-400">HWY-NH44-CAM02</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400">ZONE STATUS</p>
+                                    <p className={`font-mono font-bold ${stats.detector.active_violations > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                                        {stats.detector.active_violations > 0 ? 'CRITICAL' : 'MONITORING'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sidebar Stats */}
+                    <div className="col-span-4 flex flex-col gap-6">
+                        {/* KPI Cards */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="glass-panel p-4 rounded-xl border-l-4 border-cyan-500">
+                                <p className="text-xs text-slate-400">TOTAL HVs</p>
+                                <p className="text-3xl font-bold text-cyan-400">{stats.detector.total_hvs}</p>
+                            </div>
+                            <div className="glass-panel p-4 rounded-xl border-l-4 border-red-500">
+                                <p className="text-xs text-slate-400">VIOLATIONS</p>
+                                <p className="text-3xl font-bold text-red-500">{stats.detector.total_violations}</p>
+                            </div>
+                        </div>
+
+                        {/* Recent Alerts List */}
+                        <div className="glass-panel rounded-xl flex-1 flex flex-col p-4 relative overflow-hidden">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    VIOLATION LOG
+                                </h3>
+                                <button className="text-xs text-cyan-400 hover:underline">Export CSV</button>
+                            </div>
+                            
+                            <div className="space-y-3 overflow-y-auto max-h-[400px]">
+                                {stats.detector.active_violations > 0 ? (
+                                     <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-lg flex justify-between items-start">
+                                        <div>
+                                            <p className="font-bold text-red-400">LANE VIOLATION</p>
+                                            <p className="text-xs text-slate-400">Fast Lane • Truck</p>
+                                        </div>
+                                        <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded">NOW</span>
+                                    </div>
+                                ) : (
+                                    <div className="text-center text-slate-500 py-10">
+                                        No active violations
+                                    </div>
+                                )}
+                                {/* Static demo log */}
+                                <div className="bg-slate-800/50 border border-slate-700 p-3 rounded-lg opacity-60">
+                                    <div className="flex justify-between">
+                                        <p className="font-bold text-slate-300">VIOLATION RESOLVED</p>
+                                        <span className="text-xs text-slate-500">2m ago</span>
+                                    </div>
+                                    <p className="text-xs text-slate-400">ID: #4382 • Duration: 12s</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        lucide.createIcons();
+    </script>
+</body>
+</html>
