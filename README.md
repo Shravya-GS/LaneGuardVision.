@@ -5,10 +5,12 @@ A real-time computer vision system built for **Smart India Hackathon** to detect
 
 ---
 
-### 🚨 FOR HACKATHON EVALUATORS
+### 🚨 LIVE DEMO (ACTION CAPTURE)
+![LaneGuard Vision Demo](demo.webp)
+
 **This project requires a Python backend to run AI models.**
-*   **Live Demo**: [Click here to check if the session is active](YOUR_NGROK_LINK_HERE) *(Session depends on the developer's machine being online)*.
-*   **Video Walkthrough**: [Watch Demo Video](YOUR_YOUTUBE_OR_DRIVE_LINK_HERE)
+*   **Live Share Link**: [Click here to check if the session is active](YOUR_NGROK_LINK_HERE) *(Requires `start_share.py` running)*.
+*   **Video Walkthrough**: See `demo.webp` above.
 *   **Backend Code**: See the `backend/` folder for the YOLOv8 + FastAPI logic.
 *   **Frontend Code**: See the `frontend/index.html` for the React-based dashboard.
 
