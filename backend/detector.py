@@ -8,7 +8,10 @@ from .alerts import alert_system
 class LaneDetector:
     def __init__(self, source=0):
         # Load the YOLOv8 model
-        self.model = YOLO("yolov8n.pt")
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        model_path = os.path.join(base_dir, "yolov8n.pt")
+        self.model = YOLO(model_path)
         
         # Heavy Vehicle Classes in COCO: 5 (bus), 7 (truck)
         # For Testing: Adding 0 (person) and 2 (car) to verify webcam works

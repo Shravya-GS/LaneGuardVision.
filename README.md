@@ -3,7 +3,16 @@
 
 A real-time computer vision system built for **Smart India Hackathon** to detect heavy vehicles illegally occupying fast lanes on National Highways.
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=LaneGuard+Vision+Dashboard)
+---
+
+### 🚨 FOR HACKATHON EVALUATORS
+**This project requires a Python backend to run AI models.**
+*   **Live Demo**: [Click here to check if the session is active](YOUR_NGROK_LINK_HERE) *(Session depends on the developer's machine being online)*.
+*   **Video Walkthrough**: [Watch Demo Video](YOUR_YOUTUBE_OR_DRIVE_LINK_HERE)
+*   **Backend Code**: See the `backend/` folder for the YOLOv8 + FastAPI logic.
+*   **Frontend Code**: See the `frontend/index.html` for the React-based dashboard.
+
+---
 
 ## 🚀 Features
 *   **Live Vehicle Detection**: Uses **YOLOv8** + **OpenCV** to detect Trucks, Buses, Cars, and People.
@@ -50,6 +59,12 @@ A real-time computer vision system built for **Smart India Hackathon** to detect
 
 2.  **Open Dashboard**:
     Go to 👉 **[http://localhost:8000](http://localhost:8000)**
+
+## 🌐 Sharing with Evaluators (ngrok)
+If you need to show the app to someone else (hackathon judges) without them installing anything:
+1.  Run `run_app.bat` to start the server.
+2.  Run `python start_share.py` in a separate terminal.
+3.  Copy the **Public Link** generated and paste it into the "Live Demo" section of this README.
 
 ## ⚙️ Configuration
 

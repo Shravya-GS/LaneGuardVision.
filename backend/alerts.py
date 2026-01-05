@@ -10,7 +10,12 @@ MQTT_TOPIC = "highway/enforcement/alerts"
 
 class AlertSystem:
     def __init__(self):
-        self.client = mqtt.Client()
+        # paho-mqtt 2.0+ requires CallbackAPIVersion
+        try:
+            self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+        except AttributeError:
+            # Fallback for older paho-mqtt versions
+            self.client = mqtt.Client()
         self.connected = False
         self.connect()
 

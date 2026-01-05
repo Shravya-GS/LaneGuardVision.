@@ -12,6 +12,9 @@ from backend.detector import detector
 # Mock weather for now
 weather_data = {"temp": 28, "condition": "Sunny", "location": "Hyderabad, IN"}
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_PATH = os.path.join(BASE_DIR, "frontend", "index.html")
+
 app = FastAPI()
 
 app.add_middleware(
@@ -35,7 +38,7 @@ def get_video_source():
             return 0
     
     # Fallback to local file
-    VIDEO_PATH = "highway_sample.mp4"
+    VIDEO_PATH = os.path.join(BASE_DIR, "highway_sample.mp4")
     if os.path.exists(VIDEO_PATH):
         print(f"INFO: No webcam active. Using sample video: {VIDEO_PATH}")
         return VIDEO_PATH
@@ -95,7 +98,9 @@ async def get_stats():
 # Serve Frontend (No-Build)
 @app.get("/")
 async def read_index():
-    with open("frontend/index.html", "r") as f:
+    if not os.path.exists(FRONTEND_PATH):
+        return HTMLResponse(content=f"<h1>Error: Frontend file not found at {FRONTEND_PATH}</h1>", status_code=404)
+    with open(FRONTEND_PATH, "r") as f:
         content = f.read()
     return HTMLResponse(content=content)
 
