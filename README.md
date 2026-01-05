@@ -1,7 +1,7 @@
 # LaneGuard Vision 🛣️👁️
 > **AI-Powered Highway Lane Enforcement System MVP**
 
-A real-time computer vision system built for **Smart India Hackathon** to detect heavy vehicles illegally occupying fast lanes on National Highways.
+A real-time computer vision system built for **Tech Sprint Hackathon** to detect heavy vehicles illegally occupying fast lanes on National Highways.
 
 ---
 
