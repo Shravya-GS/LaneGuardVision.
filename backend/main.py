@@ -46,14 +46,15 @@ def get_video_source():
     print("CRITICAL ERROR: No video source (webcam or file) found!")
     return None
 
-video_source = get_video_source()
+app.state.video_source = get_video_source()
+app.state.cam_status = "Connected" if isinstance(app.state.video_source, int) else "Fallback (Video)"
 
-cap = cv2.VideoCapture(video_source)
+cap = cv2.VideoCapture(app.state.video_source)
 if not cap.isOpened():
-    print(f"CRITICAL ERROR: Could not open video source {video_source}")
-    print("If using a webcam, check that no other app is using it and you have granted permissions.")
+    print(f"CRITICAL ERROR: Could not open video source {app.state.video_source}")
+    app.state.cam_status = "Disconnected"
 else:
-    print(f"Successfully opened video source: {video_source}")
+    print(f"Successfully opened video source: {app.state.video_source}")
 
 def generate_frames():
     global cap
@@ -61,11 +62,12 @@ def generate_frames():
         success, frame = cap.read()
         if not success:
             # Loop video
-            if isinstance(video_source, str):
+            if isinstance(app.state.video_source, str):
                 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                 continue
             else:
                 print("Failed to read frame from webcam.")
+                app.state.cam_status = "Error"
                 # Try to re-open or just break?
                 # For debugging, let's keep trying or just sleep
                 time.sleep(1)
@@ -92,7 +94,8 @@ async def video_feed():
 async def get_stats():
     return JSONResponse(content={
         "detector": detector.stats,
-        "weather": weather_data
+        "weather": weather_data,
+        "camera": app.state.cam_status
     })
 
 # Serve Frontend (No-Build)

@@ -101,6 +101,12 @@
                                     <p className="font-mono text-cyan-400">HWY-NH44-CAM02</p>
                                 </div>
                                 <div>
+                                    <p className="text-xs text-slate-400">SYSTEM STATUS</p>
+                                    <p className={`font-mono font-bold ${stats.camera === 'Connected' ? 'text-green-500' : 'text-yellow-500'}`}>
+                                        {stats.camera || 'Starting...'}
+                                    </p>
+                                </div>
+                                <div>
                                     <p className="text-xs text-slate-400">ZONE STATUS</p>
                                     <p className={`font-mono font-bold ${stats.detector.active_violations > 0 ? 'text-red-500' : 'text-green-500'}`}>
                                         {stats.detector.active_violations > 0 ? 'CRITICAL' : 'MONITORING'}
