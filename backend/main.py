@@ -22,13 +22,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Video Source
-VIDEO_PATH = "highway_sample.mp4"
-if not os.path.exists(VIDEO_PATH):
-    print(f"Warning: {VIDEO_PATH} not found. Using Webcam (0).")
-    video_source = 0
-else:
-    video_source = VIDEO_PATH
+# Video Source Configuration
+# Priority: 1. Webcam (index 0), 2. Local file, 3. Error
+def get_video_source():
+    # Try webcam 0 first
+    test_cap = cv2.VideoCapture(0)
+    if test_cap.isOpened():
+        success, _ = test_cap.read()
+        test_cap.release()
+        if success:
+            print("INFO: Live Webcam detected. Using Camera Index 0.")
+            return 0
+    
+    # Fallback to local file
+    VIDEO_PATH = "highway_sample.mp4"
+    if os.path.exists(VIDEO_PATH):
+        print(f"INFO: No webcam active. Using sample video: {VIDEO_PATH}")
+        return VIDEO_PATH
+    
+    print("CRITICAL ERROR: No video source (webcam or file) found!")
+    return None
+
+video_source = get_video_source()
 
 cap = cv2.VideoCapture(video_source)
 if not cap.isOpened():
@@ -85,4 +100,7 @@ async def read_index():
     return HTMLResponse(content=content)
 
 if __name__ == "__main__":
+    print("-" * 30)
+    print("STARTING LANEGUARD VISION BACKEND")
+    print("-" * 30)
     uvicorn.run(app, host="0.0.0.0", port=8000)

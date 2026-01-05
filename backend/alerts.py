@@ -16,12 +16,14 @@ class AlertSystem:
 
     def connect(self):
         try:
-            self.client.connect(MQTT_BROKER, MQTT_PORT, 60)
+            # Use connect_async to prevent blocking if the broker is down
+            print(f"Connecting to MQTT Broker: {MQTT_BROKER}...")
+            self.client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
             self.client.loop_start()
             self.connected = True
-            print(f"Connected to MQTT Broker: {MQTT_BROKER}")
+            print(f"MQTT connection initialized (Background)")
         except Exception as e:
-            print(f"Failed to connect to MQTT: {e}")
+            print(f"Failed to initialize MQTT: {e}")
 
     def send_alert(self, violation_data):
         if not self.connected:
